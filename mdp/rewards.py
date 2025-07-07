@@ -279,6 +279,10 @@ def z_command_error_tanh(
     asset: RigidObject = env.scene[asset_cfg.name]
     command = env.command_manager.get_command(command_name)
 
+    des_pos_b = command[:, :3]
+    des_pos_w, _ = combine_frame_transforms(asset.data.root_state_w[:, :3], asset.data.root_state_w[:, 3:7], des_pos_b)
+    curr_pos_w = asset.data.body_state_w[:, asset_cfg.body_ids[0], :3]
+    
     des_pose_w = command[:, 0:7]
     curr_pose_w = asset.data.body_state_w[:, asset_cfg.body_ids[0], 0:7]  # type: ignore
 

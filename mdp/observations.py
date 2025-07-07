@@ -28,9 +28,10 @@ def eef_pose(env: ManagerBasedEnv, asset_cfg: SceneEntityCfg) -> torch.Tensor:
     """Root height in the simulation world frame."""
     # extract the used quantities (to enable type-hinting)
     asset: RigidObject = env.scene[asset_cfg.name]
-    curr_pos_w = asset.data.body_state_w[:, asset_cfg.body_ids[0], :3]  # type: ignore
-    return asset.data.root_pos_w[:, 2].unsqueeze(-1)
-
+    curr_pose_w = asset.data.body_state_w[:, asset_cfg.body_ids[0], 0:7]
+    curr_pose_w[:, :3] -= env.scene.env_origins
+    # print("[curr_pose_w]", curr_pose_w)
+    return curr_pose_w
 
 """
 Root state.

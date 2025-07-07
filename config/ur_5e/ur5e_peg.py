@@ -57,14 +57,64 @@ UR5e_PEG_CFG = ArticulationCfg(
     #     },
     # ),
     init_state=ArticulationCfg.InitialStateCfg(
+        # joint_pos={
+        #     "shoulder_pan_joint": -15 * np.pi/180,#-15
+        #     "shoulder_lift_joint": -65 * np.pi/180,
+        #     "elbow_joint": 113 * np.pi/180,
+        #     "wrist_1_joint": -138 * np.pi/180,
+        #     "wrist_2_joint": -90 * np.pi/180,
+        #     "wrist_3_joint": -15.0 * np.pi/180,
+        # },
+        # 0,0, 5mm
+        # joint_pos={
+        #     "shoulder_pan_joint": -15 * np.pi/180,#31-46
+        #     "shoulder_lift_joint": -55 * np.pi/180,
+        #     "elbow_joint": 116 * np.pi/180,
+        #     "wrist_1_joint": -151 * np.pi/180,
+        #     "wrist_2_joint": -90 * np.pi/180,
+        #     "wrist_3_joint": -15.0 * np.pi/180,
+        # },
+
+        #0,1, 5mm
+        # joint_pos={
+        #     "shoulder_pan_joint": -14.3 * np.pi/180,#31.7-46
+        #     "shoulder_lift_joint": -52 * np.pi/180,
+        #     "elbow_joint": 111 * np.pi/180,
+        #     "wrist_1_joint": -148.5 * np.pi/180,
+        #     "wrist_2_joint": -90 * np.pi/180,
+        #     "wrist_3_joint": -14.0 * np.pi/180,
+        # },
+
+        #0,-1, 5mm
+        # joint_pos={
+        #     "shoulder_pan_joint": -15.8 * np.pi/180,#31.7-46
+        #     "shoulder_lift_joint": -56 * np.pi/180,
+        #     "elbow_joint": 121 * np.pi/180,
+        #     "wrist_1_joint": -155 * np.pi/180,
+        #     "wrist_2_joint": -90 * np.pi/180,
+        #     "wrist_3_joint": -15.8 * np.pi/180,
+        # },
+
+        #-1,0, 5mm
+        # joint_pos={
+        #     "shoulder_pan_joint": -18 * np.pi/180,#31.7-46
+        #     "shoulder_lift_joint": -54 * np.pi/180,
+        #     "elbow_joint": 115.7 * np.pi/180,
+        #     "wrist_1_joint": -151.8 * np.pi/180,
+        #     "wrist_2_joint": -90 * np.pi/180,
+        #     "wrist_3_joint": -18.4 * np.pi/180,
+        # },
+
+        #1,0, 5mm
         joint_pos={
-            "shoulder_pan_joint": -15 * np.pi/180,#-15
-            "shoulder_lift_joint": -65 * np.pi/180,
-            "elbow_joint": 113 * np.pi/180,
-            "wrist_1_joint": -138 * np.pi/180,
+            "shoulder_pan_joint": -11.7 * np.pi/180,#34.3-46
+            "shoulder_lift_joint": -54.3 * np.pi/180,
+            "elbow_joint": 115.6 * np.pi/180,
+            "wrist_1_joint": -151.3 * np.pi/180,
             "wrist_2_joint": -90 * np.pi/180,
-            "wrist_3_joint": -15.0 * np.pi/180,
+            "wrist_3_joint": -11.7 * np.pi/180,
         },
+
     ),
     # init_state=ArticulationCfg.InitialStateCfg(
     #     joint_pos={
@@ -89,10 +139,11 @@ UR5e_PEG_CFG = ArticulationCfg(
     actuators={
         "arm": ImplicitActuatorCfg(
             joint_names_expr=[".*"],
-            velocity_limit_sim=1.0,
+            # velocity_limit_sim=0.1,
+            velocity_limit_sim=0.05,
             effort_limit_sim=17.0,
-            stiffness=1600.0,
-            damping=800.0,
+            stiffness=800.0,
+            damping=120.0,
         ),
     },
 

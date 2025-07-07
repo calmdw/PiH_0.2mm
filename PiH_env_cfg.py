@@ -143,6 +143,7 @@ class ObservationsCfg:
         joint_pos = ObsTerm(func=mdp.joint_pos_rel, noise=Unoise(n_min=-0.01, n_max=0.01))
         # joint_vel = ObsTerm(func=mdp.joint_vel_rel, noise=Unoise(n_min=-0.01, n_max=0.01))
         # pose_distance = ObsTerm(func=mdp.pose_distance, params={"command_name": "ee_pose", "asset_cfg": SceneEntityCfg("robot", body_names="peg")})
+        pose_distance = ObsTerm(func=mdp.eef_pose, params={"asset_cfg": SceneEntityCfg("robot", body_names="peg")})
         target_pose = ObsTerm(func=mdp.generated_commands, params={"command_name": "ee_pose"})
         actions = ObsTerm(func=mdp.last_action)
         # contact_force = ObsTerm(func=mdp.contact_force, params={"sensor_cfg": SceneEntityCfg("contact_forces", body_names=".*tool")})
@@ -174,10 +175,19 @@ class EventCfg:
         params={
             # for ur5e
             # "pose_range": {"x": (-0.03, 0.03), "y": (-0.03, 0.03), "z": (-0.001, 0.001), "roll": (0.0, 0.0), "yaw": (0.0, 0.0)},
-            # "pose_range": {"x": (-0.08, 0.08), "y": (-0.08, 0.08), "z": (-0.001, 0.001), "roll": (0.0, 0.0), "yaw": (0.0, 0.0)},
+            # "pose_range": {"x": (-0.07, 0.07), "y": (-0.07, 0.07), "z": (-0.001, 0.001), "roll": (0.0, 0.0), "yaw": (0.0, 0.0)},
             # for collecting data
-            "pose_range": {"x": (-0.06, -0.06), "y": (0.06, 0.06), "z": (0.0, 0.0), "roll": (0.0, 0.0), "pitch": (0.0, 0.0), "yaw": (0.0, 0.0)},
-            # "pose_range": {"x": (0.03, 0.03), "y": (0.03, 0.03), "z": (0.0, 0.0), "roll": (0.0, 0.0), "pitch": (0.0, 0.0), "yaw": (0.0, 0.0)},
+            #0,0,5mm
+            # "pose_range": {"x": (0.0, 0.0), "y": (0.03, 0.03), "z": (0.0, 0.0), "roll": (0.0, 0.0), "pitch": (0.0, 0.0), "yaw": (0.0, 0.0)},
+            #0,1,5mm
+            # "pose_range": {"x": (0.03, 0.03), "y": (0.0, 0.0), "z": (0.0, 0.0), "roll": (0.0, 0.0), "pitch": (0.0, 0.0), "yaw": (0.0, 0.0)},
+            #1,0,5mm
+            "pose_range": {"x": (0.0, 0.0), "y": (0.03, 0.03), "z": (0.0, 0.0), "roll": (0.0, 0.0), "pitch": (0.0, 0.0), "yaw": (0.0, 0.0)},
+
+            #-1,0,5mm
+            # "pose_range": {"x": (0.0, 0.0), "y": (-0.03, -0.03), "z": (0.0, 0.0), "roll": (0.0, 0.0), "pitch": (0.0, 0.0), "yaw": (0.0, 0.0)},
+
+            # "pose_range": {"x": (-0.06, -0.06), "y": (-0.03, -0.03), "z": (0.0, 0.0), "roll": (0.0, 0.0), "pitch": (0.0, 0.0), "yaw": (0.0, 0.0)},
             # "pose_range": {"x": (0.06, 0.06), "y": (0.06, 0.06), "z": (0.0, 0.0), "roll": (0.0, 0.0), "pitch": (0.0, 0.0), "yaw": (0.0, 0.0)},
             # "pose_range": {"x": (0.0, 0.0), "y": (0.0, 0.0), "z": (0.0, 0.0), "roll": (0.0, 0.0), "yaw": (0.0, 0.0)},
             "velocity_range": {}, 
@@ -212,19 +222,19 @@ class RewardsCfg:
 
     end_effector_orientation_tracking = RewTerm(
         func=mdp.orientation_command_error,
-        weight=-0.1,
+        weight=-0.6,
         params={"asset_cfg": SceneEntityCfg("robot", body_names=MISSING), "command_name": "ee_pose"},
     )
 
     ori_distance = RewTerm(
         func=mdp.ori_aligned,
-        weight=0.3,
+        weight=0.7,
         params={"asset_cfg": SceneEntityCfg("robot", body_names=MISSING), "command_name": "ee_pose"},
     )
 
     xy_distance = RewTerm(
         func=mdp.xy_aligned,
-        weight=0.3,
+        weight=0.7,
         params={"asset_cfg": SceneEntityCfg("robot", body_names=MISSING), "command_name": "ee_pose"},
     )
 
@@ -322,10 +332,10 @@ class PiHEnvCfg(ManagerBasedRLEnvCfg):
         # general settings
         self.decimation = 2
         self.sim.render_interval = self.decimation
+        # self.sim.render_interval = 1
         self.episode_length_s = 10.0
         self.viewer.eye = (3.5, 3.5, 3.5)
         # simulation settings
-        self.sim.dt = 1.0 / 120.0
+        self.sim.dt = 1.0 / 600.0
         # if self.scene.contact_forces is not None:
         #     self.scene.contact_forces.update_period = self.sim.dt
-
