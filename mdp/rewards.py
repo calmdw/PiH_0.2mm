@@ -97,7 +97,7 @@ def orientation_command_error(env: ManagerBasedRLEnv, command_name: str, asset_c
 
     return quat_error_magnitude(curr_quat_w, des_quat_w)
 
-def xy_aligned(env: ManagerBasedRLEnv, command_name: str, asset_cfg: SceneEntityCfg) -> torch.Tensor:
+def xyz_aligned(env: ManagerBasedRLEnv, command_name: str, asset_cfg: SceneEntityCfg) -> torch.Tensor:
     """Penalize tracking of the position error using L2-norm.
 
     The function computes the position error between the desired position (from the command) and the
@@ -108,18 +108,29 @@ def xy_aligned(env: ManagerBasedRLEnv, command_name: str, asset_cfg: SceneEntity
     asset: RigidObject = env.scene[asset_cfg.name]
     command = env.command_manager.get_command(command_name)
     # obtain the desired and current positions
+    des_quat_b = command[:, 3:7]
+    des_quat_w = quat_mul(asset.data.root_state_w[:, 3:7], des_quat_b)
+    curr_quat_w = asset.data.body_state_w[:, asset_cfg.body_ids[0], 3:7]  # type: ignore
+
+    ori_error = quat_error_magnitude(curr_quat_w, des_quat_w)
+    is_ori_aligned = torch.where(
+        ori_error < 2e-2,
+        torch.ones_like(ori_error),
+        torch.zeros_like(ori_error),
+        )
+    
     des_pos_b = command[:, :3]
     des_pos_w, _ = combine_frame_transforms(asset.data.root_state_w[:, :3], asset.data.root_state_w[:, 3:7], des_pos_b)
     curr_pos_w = asset.data.body_state_w[:, asset_cfg.body_ids[0], :3]
 
-    xy_error = torch.sum(torch.abs(curr_pos_w[:, :2] - des_pos_w[:, :2]), dim=-1)
+    xy_error = torch.sum(torch.abs(curr_pos_w[:, :3] - des_pos_w[:, :3]), dim=-1)
     is_xy_aligned = torch.where(
-        xy_error < 9e-4,
+        xy_error < 6e-4,
         torch.ones_like(xy_error),
         torch.zeros_like(xy_error),
         )
     
-    xy_aligned = 1 * is_xy_aligned
+    xy_aligned = 1 * is_xy_aligned * is_ori_aligned
     return xy_aligned
 
 def ori_aligned(env: ManagerBasedRLEnv, command_name: str, asset_cfg: SceneEntityCfg) -> torch.Tensor:
@@ -139,7 +150,7 @@ def ori_aligned(env: ManagerBasedRLEnv, command_name: str, asset_cfg: SceneEntit
 
     ori_error = quat_error_magnitude(curr_quat_w, des_quat_w)
     is_ori_aligned = torch.where(
-        ori_error < 2e-2,
+        ori_error < 1e-2,
         torch.ones_like(ori_error),
         torch.zeros_like(ori_error),
         )

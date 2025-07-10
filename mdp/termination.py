@@ -12,6 +12,7 @@ from typing import TYPE_CHECKING
 from isaaclab.assets import Articulation, RigidObject
 from isaaclab.managers import SceneEntityCfg
 from isaaclab.sensors import ContactSensor
+from isaaclab.utils.math import combine_frame_transforms
 
 if TYPE_CHECKING:
     from isaaclab.envs import ManagerBasedRLEnv
@@ -45,7 +46,10 @@ def out_of_workspace(
     # extract the used quantities (to enable type-hinting)
     asset: RigidObject = env.scene[asset_cfg.name]
     command = env.command_manager.get_command(command_name)
-    des_pos_w = command[:, :3]
+    # obtain the desired and current positions
+    des_pos_b = command[:, :3]
+    des_pos_w, _ = combine_frame_transforms(asset.data.root_state_w[:, :3], asset.data.root_state_w[:, 3:7], des_pos_b)
+
     curr_pos_w = asset.data.body_state_w[:, asset_cfg.body_ids[0], :3]
 
     pos_distance = torch.norm(des_pos_w-curr_pos_w, p=1, dim=1)

@@ -177,19 +177,28 @@ class EventCfg:
             # "pose_range": {"x": (-0.03, 0.03), "y": (-0.03, 0.03), "z": (-0.001, 0.001), "roll": (0.0, 0.0), "yaw": (0.0, 0.0)},
             # "pose_range": {"x": (-0.07, 0.07), "y": (-0.07, 0.07), "z": (-0.001, 0.001), "roll": (0.0, 0.0), "yaw": (0.0, 0.0)},
             # for collecting data
-            #0,0,5mm
+            #0,0, 5mm
             # "pose_range": {"x": (0.0, 0.0), "y": (0.03, 0.03), "z": (0.0, 0.0), "roll": (0.0, 0.0), "pitch": (0.0, 0.0), "yaw": (0.0, 0.0)},
-            #0,1,5mm
+            # 0,1, 5mm
             # "pose_range": {"x": (0.03, 0.03), "y": (0.0, 0.0), "z": (0.0, 0.0), "roll": (0.0, 0.0), "pitch": (0.0, 0.0), "yaw": (0.0, 0.0)},
-            #1,0,5mm
-            "pose_range": {"x": (0.0, 0.0), "y": (0.03, 0.03), "z": (0.0, 0.0), "roll": (0.0, 0.0), "pitch": (0.0, 0.0), "yaw": (0.0, 0.0)},
+            # 0,2, 5mm
+            # "pose_range": {"x": (0.06, 0.06), "y": (0.0, 0.0), "z": (0.0, 0.0), "roll": (0.0, 0.0), "pitch": (0.0, 0.0), "yaw": (0.0, 0.0)},
 
-            #-1,0,5mm
+            # 1,0, 5mm
+            # "pose_range": {"x": (0.0, 0.0), "y": (0.03, 0.03), "z": (0.0, 0.0), "roll": (0.0, 0.0), "pitch": (0.0, 0.0), "yaw": (0.0, 0.0)},
+            # 2,0, 5mm
+            # "pose_range": {"x": (0.0, 0.0), "y": (0.06, 0.06), "z": (0.0, 0.0), "roll": (0.0, 0.0), "pitch": (0.0, 0.0), "yaw": (0.0, 0.0)},
+
+            #-1, 0, 5mm
             # "pose_range": {"x": (0.0, 0.0), "y": (-0.03, -0.03), "z": (0.0, 0.0), "roll": (0.0, 0.0), "pitch": (0.0, 0.0), "yaw": (0.0, 0.0)},
+            #-2, 0, 5mm
+            # "pose_range": {"x": (0.0, 0.0), "y": (-0.06, -0.06), "z": (0.0, 0.0), "roll": (0.0, 0.0), "pitch": (0.0, 0.0), "yaw": (0.0, 0.0)},
 
-            # "pose_range": {"x": (-0.06, -0.06), "y": (-0.03, -0.03), "z": (0.0, 0.0), "roll": (0.0, 0.0), "pitch": (0.0, 0.0), "yaw": (0.0, 0.0)},
-            # "pose_range": {"x": (0.06, 0.06), "y": (0.06, 0.06), "z": (0.0, 0.0), "roll": (0.0, 0.0), "pitch": (0.0, 0.0), "yaw": (0.0, 0.0)},
-            # "pose_range": {"x": (0.0, 0.0), "y": (0.0, 0.0), "z": (0.0, 0.0), "roll": (0.0, 0.0), "yaw": (0.0, 0.0)},
+            #0, -1, 5mm
+            # "pose_range": {"x": (-0.03, -0.03), "y": (0.0, 0.0), "z": (0.0, 0.0), "roll": (0.0, 0.0), "pitch": (0.0, 0.0), "yaw": (0.0, 0.0)},
+            # 0, -2, 5mm
+            # "pose_range": {"x": (-0.06, -0.06), "y": (0.0, 0.0), "z": (0.0, 0.0), "roll": (0.0, 0.0), "pitch": (0.0, 0.0), "yaw": (0.0, 0.0)},
+
             "velocity_range": {}, 
             "asset_cfg": SceneEntityCfg("base", body_names="Base"),
         },
@@ -222,19 +231,19 @@ class RewardsCfg:
 
     end_effector_orientation_tracking = RewTerm(
         func=mdp.orientation_command_error,
-        weight=-0.6,
+        weight=-0.9,
         params={"asset_cfg": SceneEntityCfg("robot", body_names=MISSING), "command_name": "ee_pose"},
     )
 
     ori_distance = RewTerm(
         func=mdp.ori_aligned,
-        weight=0.7,
+        weight=1.6,
         params={"asset_cfg": SceneEntityCfg("robot", body_names=MISSING), "command_name": "ee_pose"},
     )
 
-    xy_distance = RewTerm(
-        func=mdp.xy_aligned,
-        weight=0.7,
+    xyz_distance = RewTerm(
+        func=mdp.xyz_aligned,
+        weight=1.6,
         params={"asset_cfg": SceneEntityCfg("robot", body_names=MISSING), "command_name": "ee_pose"},
     )
 
@@ -280,10 +289,10 @@ class TerminationsCfg:
     """Termination terms for the MDP."""
 
     time_out = DoneTerm(func=mdp.time_out, time_out=True)
-    # out_of_workspace = DoneTerm(
-    #     func=mdp.out_of_workspace,
-    #     params={"asset_cfg": SceneEntityCfg("robot", body_names="peg"), "command_name": "ee_pose", "limit_pos": 0.86},
-    #     )
+    out_of_workspace = DoneTerm(
+        func=mdp.out_of_workspace,
+        params={"asset_cfg": SceneEntityCfg("robot", body_names="peg"), "command_name": "ee_pose", "limit_pos": 0.1},
+        )
 
 @configclass
 class CurriculumCfg:
@@ -330,7 +339,7 @@ class PiHEnvCfg(ManagerBasedRLEnvCfg):
     def __post_init__(self):
         """Post initialization."""
         # general settings
-        self.decimation = 2
+        self.decimation = 4
         self.sim.render_interval = self.decimation
         # self.sim.render_interval = 1
         self.episode_length_s = 10.0

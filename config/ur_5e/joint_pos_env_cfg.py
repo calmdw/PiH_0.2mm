@@ -39,7 +39,7 @@ class UR5ePiHEnvCfg(PiHEnvCfg):
         self.rewards.end_effector_position_tracking_fine_grained.params["asset_cfg"].body_names = ["peg"]
         self.rewards.end_effector_orientation_tracking.params["asset_cfg"].body_names = ["peg"]
         self.rewards.ori_distance.params["asset_cfg"].body_names = ["peg"]
-        self.rewards.xy_distance.params["asset_cfg"].body_names = ["peg"]
+        self.rewards.xyz_distance.params["asset_cfg"].body_names = ["peg"]
         # self.rewards.ori_error.params["asset_cfg"].body_names = ["peg"]
         # PiH sepecific rewards:
         # self.rewards.xyz_error.params["asset_cfg"].body_names = ["peg"]
